@@ -23,14 +23,30 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument(
         "-q",
         "--quality",
-        default=80,
+        default=100,
         type=int,
         help="Quality to use for JPG images (default: %(default)s)",
     )
+    parser.add_argument(
+        "-x",
+        "--width",
+        default=1024,
+        type=int,
+        help="Width to use for JPG images (default: %(default)s)",
+    )
+    parser.add_argument(
+        "-y",
+        "--height",
+        default=1024,
+        type=int,
+        help="Height to use for JPG images (default: %(default)s)",
+    )
+
     args = parser.parse_args(argv)
 
     def optimize(source: Path, target: IO[bytes]) -> None:
         im = Image.open(source)
+        im = im.resize((args.width, args.height))
         im.save(target, format=im.format, optimize=True, progressive=True, quality=args.quality)
 
     success = _optimize_images(args.filenames, optimize, args.threshold)

@@ -20,10 +20,25 @@ def main(argv: Sequence[str] | None = None) -> int:
         type=int,
         help="Minimum improvement to replace file in bytes (default: %(default)s)",
     )
+    parser.add_argument(
+        "-x",
+        "--width",
+        default=1024,
+        type=int,
+        help="Width to use for JPG images (default: %(default)s)",
+    )
+    parser.add_argument(
+        "-y",
+        "--height",
+        default=1024,
+        type=int,
+        help="Height to use for JPG images (default: %(default)s)",
+    )
     args = parser.parse_args(argv)
 
     def optimize(source: Path, target: IO[bytes]) -> None:
         im = Image.open(source)
+        im = im.resize((args.width, args.height))
         im.save(target, format=im.format, optimize=True)
 
     success = _optimize_images(args.filenames, optimize, args.threshold)
